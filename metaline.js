@@ -1,20 +1,14 @@
 'use strict'
 
-function deepmergeArray(options) {
+function deepmergeArray (options) {
   const deepmerge = options.deepmerge
-  const clone = options.clone
   return function (target, source) {
     let i = 0
-    const tl = target.length
-    const sl = source.length
-    const il = Math.max(target.length, source.length)
-    const result = new Array(il)
-    for (i = 0; i < il; ++i) {
-      if (i < sl) {
-        result[i] = deepmerge(target[i], source[i])
-      } else {
-        result[i] = clone(target[i])
-      }
+    const result = new Array(target.length)
+    for (i = 0; i < target.length; ++i) {
+      // This will throw if the items are not equal in length
+      // but this cannot happen with the current usage
+      result[i] = deepmerge(target[i], source[i])
     }
     return result
   }
@@ -24,6 +18,12 @@ const deepmerge = require('@fastify/deepmerge')({
   mergeArray: deepmergeArray
 })
 
+class ParseError extends Error {
+  constructor (token, position) {
+    super(`Unexpected token \`${token}\` at position ${position}`)
+  }
+}
+
 // TODO this shold be a parser that generates a function
 function parsePhrase (phrase) {
   const path = []
@@ -31,9 +31,10 @@ function parsePhrase (phrase) {
   let startKey = 0
   let i = 0
   for (; i < phrase.length; i++) {
-    const c = phrase[i]
-
     if (phrase.charCodeAt(i) === 46) { // .
+      if (i === 0) {
+        throw new ParseError(phrase[i], i)
+      }
       path.push({
         type: 'key',
         key: phrase.slice(startKey, i)
@@ -42,6 +43,9 @@ function parsePhrase (phrase) {
     }
 
     if (phrase.charCodeAt(i) === 36) { // $
+      if (startKey !== i) {
+        throw new ParseError(phrase[i], i)
+      }
       if (phrase.charCodeAt(i + 1) === 62) { // >
         path.push({
           type: 'loop'
@@ -56,17 +60,20 @@ function parsePhrase (phrase) {
     }
 
     if (phrase.charCodeAt(i) === 35) { // #
+      if (startKey !== i) {
+        throw new ParseError(phrase[i], i)
+      }
       path.push({
         type: 'property',
-        key: phrase.slice(i +1)
+        key: phrase.slice(i + 1)
       })
     }
 
     if (phrase.charCodeAt(i) === 58) { // :
-      let sliced = phrase.slice(i + 1)
-      let value = parseInt(sliced)
+      const sliced = phrase.slice(i + 1)
+      let value = parseFloat(sliced)
       if (isNaN(value)) {
-        value = parseFloat(sliced)
+        value = parseInt(sliced)
         if (isNaN(value)) {
           value = sliced
         }

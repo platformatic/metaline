@@ -4,7 +4,7 @@
   "description": "A tiny language to write mapping functions as strings",
   "main": "metaline.js",
   "scripts": {
-    "test": "standard | snazzy && node --test"
+    "test": "standard | snazzy && c8 node --test"
   },
   "keywords": [
     "mapping",
@@ -15,6 +15,7 @@
   "author": "Matteo Collina <hello@matteocollina.com>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "c8": "^8.0.1",
     "snazzy": "^9.0.0",
     "standard": "^17.1.0"
   },
