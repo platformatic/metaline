@@ -1,0 +1,9 @@
+
+where.id.in.$->#id;limit:99
+where.directorId.in.$;limit:99
+where.singerId.in.$
+$->#id
+where.directorId.in.$;limit:99
+$->id.#directoryId
+where.singerId.in.$->#id
+$->#singerId

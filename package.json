@@ -1,0 +1,21 @@
+{
+  "name": "metaline",
+  "version": "1.0.0",
+  "description": "A tiny language to write mapping functions as strings",
+  "main": "metaline.js",
+  "scripts": {
+    "test": "standard | snazzy && node --test"
+  },
+  "keywords": [
+    "mapping",
+    "function",
+    "string",
+    "line"
+  ],
+  "author": "Matteo Collina <hello@matteocollina.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "snazzy": "^9.0.0",
+    "standard": "^17.1.0"
+  }
+}
