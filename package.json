@@ -17,5 +17,8 @@
   "devDependencies": {
     "snazzy": "^9.0.0",
     "standard": "^17.1.0"
+  },
+  "dependencies": {
+    "@fastify/deepmerge": "^1.3.0"
   }
 }
