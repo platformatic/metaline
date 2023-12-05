@@ -1,9 +1,30 @@
 'use strict'
 
+function deepmergeArray(options) {
+  const deepmerge = options.deepmerge
+  const clone = options.clone
+  return function (target, source) {
+    let i = 0
+    const tl = target.length
+    const sl = source.length
+    const il = Math.max(target.length, source.length)
+    const result = new Array(il)
+    for (i = 0; i < il; ++i) {
+      if (i < sl) {
+        result[i] = deepmerge(target[i], source[i])
+      } else {
+        result[i] = clone(target[i])
+      }
+    }
+    return result
+  }
+}
+
 const deepmerge = require('@fastify/deepmerge')({
-  mergeArray: true
+  mergeArray: deepmergeArray
 })
 
+// TODO this shold be a parser that generates a function
 function parsePhrase (phrase) {
   const path = []
 
@@ -21,27 +42,25 @@ function parsePhrase (phrase) {
     }
 
     if (phrase.charCodeAt(i) === 36) { // $
-      path.push({
-        type: 'input'
-      })
-      break
-    }
-
-    /*
-    if (phrase.charCodeAt(i) === 45) { // -
-      path.push(phrase.slice(startKey, i))
-      startKey = i + 1
-    }
-
-    if (phrase.charCodeAt(i) === 62) { // >
-      path.push(phrase.slice(startKey, i))
-      startKey = i + 1
-      if (phrase.charCodeAt(i + 1) === 35) { // #
-        path.push(Input)
-        i++
+      if (phrase.charCodeAt(i + 1) === 62) { // >
+        path.push({
+          type: 'loop'
+        })
+        i += 2
+        startKey = i
+      } else {
+        path.push({
+          type: 'input'
+        })
       }
     }
-    */
+
+    if (phrase.charCodeAt(i) === 35) { // #
+      path.push({
+        type: 'property',
+        key: phrase.slice(i +1)
+      })
+    }
 
     if (phrase.charCodeAt(i) === 58) { // :
       let sliced = phrase.slice(i + 1)
@@ -61,11 +80,16 @@ function parsePhrase (phrase) {
     }
   }
 
-  return function transformPhrase (input) {
+  return function (input) {
+    return transformPhrase(input, path)
+  }
+
+  function transformPhrase (input, path) {
     let out = {}
     let obj = out
     let currentKey = null
-    for (const chunk of path) {
+    for (let i = 0; i < path.length; i++) {
+      const chunk = path[i]
       if (chunk.type === 'input') {
         if (currentKey) {
           obj[currentKey] = input
@@ -87,6 +111,24 @@ function parsePhrase (phrase) {
         } else {
           out = dest
         }
+      } else if (chunk.type === 'property') {
+        if (currentKey) {
+          obj[currentKey] = input[chunk.key]
+        } else {
+          out = input[chunk.key]
+        }
+      } else if (chunk.type === 'loop') {
+        const remaining = path.slice(i + 1)
+        const value = input.map(item => {
+          return transformPhrase(item, remaining)
+        })
+
+        if (currentKey) {
+          obj[currentKey] = value
+        } else {
+          out = value
+        }
+        break
       }
     }
     return out
