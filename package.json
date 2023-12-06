@@ -1,6 +1,6 @@
 {
   "name": "metaline",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A tiny language to write mapping functions as strings",
   "main": "metaline.js",
   "scripts": {
