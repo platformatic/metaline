@@ -126,9 +126,9 @@ function parsePhrase (phrase) {
         }
       } else if (chunk.type === 'loop') {
         const remaining = path.slice(i + 1)
-        const value = input.map(item => {
+        const value = [...new Set(input.map(item => {
           return transformPhrase(item, remaining)
-        })
+        }).flat())]
 
         if (currentKey) {
           obj[currentKey] = value
