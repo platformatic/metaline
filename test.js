@@ -23,10 +23,9 @@ buildTest('where.id.in.$>#id;limit:99', [{ id: 1 }, { id: 2 }], { where: { id: {
 buildTest('$>id.#directorId', [{ directorId: 1 }, { directorId: 2 }], [{ id: 1 }, { id: 2 }])
 buildTest('$>id.#directorId;$>foo.#bar', [{ directorId: 1, bar: 2 }, { directorId: 2, bar: 3 }], [{ id: 1, foo: 2 }, { id: 2, foo: 3 }])
 buildTest('$>#movieIds', [
-  { name: 'Odeon', id: '90', movieIds: [ '10', '12' ] },
-  { name: 'Main Theatre', id: '92', movieIds: [ '12', '10' ] }
-], [ '10', '12' ])
-
+  { name: 'Odeon', id: '90', movieIds: ['10', '12'] },
+  { name: 'Main Theatre', id: '92', movieIds: ['12', '10'] }
+], ['10', '12'])
 
 test('parsing errors', t => {
   throws(() => metaline('.#'), { message: 'Unexpected token `.` at position 0' })
