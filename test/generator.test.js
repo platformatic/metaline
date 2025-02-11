@@ -61,4 +61,18 @@ test('code generation', async (t) => {
       [{ id: 1, foo: 2 }, { id: 2, foo: 3 }]
     )
   })
+
+  await t.test('multiple map operations with direct property access', () => {
+    testGeneration(
+      '$>#directId;$>foo.#barId',
+      [
+        { directId: 1, barId: 'a' },
+        { directId: 2, barId: 'b' }
+      ],
+      [
+        { id: 1, foo: 'a' },
+        { id: 2, foo: 'b' }
+      ]
+    )
+  })
 })
