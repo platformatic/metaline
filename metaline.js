@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-disable no-new-func */
+
 const { parse } = require('./lib/parser.js')
 const { generate } = require('./lib/generator.js')
 

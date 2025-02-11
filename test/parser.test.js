@@ -174,13 +174,13 @@ test('multiple phrases', async (t) => {
 test('error cases', async (t) => {
   await t.test('invalid start with dot', () => {
     throws(() => parse('.#'), {
-      message: 'Parser error at position 0: Expected IDENTIFIER, got DOT'
+      message: 'Unexpected token `.` at position 0'
     })
   })
 
   await t.test('hash without property name', () => {
     throws(() => parse('foo#'), {
-      message: 'Parser error at position 4: Expected IDENTIFIER, got EOF'
+      message: 'Unexpected token `#` at position 3'
     })
   })
 
@@ -192,7 +192,7 @@ test('error cases', async (t) => {
 
   await t.test('colon without value', () => {
     throws(() => parse('limit:'), {
-      message: 'Parser error at position 6: Expected number or identifier after colon'
+      message: 'Unexpected token `EOF` at position 6'
     })
   })
 

@@ -1,11 +1,13 @@
 'use strict'
 
+/* eslint-disable no-new-func */
+
 const { test } = require('node:test')
 const { deepEqual } = require('node:assert/strict')
 const { parse } = require('../lib/parser.js')
 const { generate } = require('../lib/generator.js')
 
-function testGeneration(str, input, expected) {
+function testGeneration (str, input, expected) {
   const ast = parse(str)
   console.log('AST for:', str)
   console.log(JSON.stringify(ast, null, 2))
